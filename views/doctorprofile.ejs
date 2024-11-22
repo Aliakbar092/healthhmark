@@ -1,0 +1,99 @@
+<style>
+  .doctor-profile {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+
+  .doctor-profile-header img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 3px solid #3a87ad;
+    margin-bottom: 15px;
+  }
+
+  .doctor-profile-details h2 {
+    font-size: 1.8em;
+    color: #333;
+    margin-bottom: 10px;
+  }
+
+  .doctor-profile-details p {
+    font-size: 1em;
+    color: #555;
+    margin: 5px 0;
+  }
+
+  .doctor-profile-details p strong {
+    color: #3a87ad;
+  }
+
+  .contact-button {
+    margin-top: 15px;
+  }
+
+  .contact-button .btn {
+    background-color: #3a87ad;
+    color: white;
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .contact-button .btn:hover {
+    background-color: #337ab7;
+  }
+
+  .login-prompt {
+    font-size: 0.9em;
+    color: #777;
+  }
+</style>
+
+<link rel="icon" type="image/x-icon" href="/logo.jpeg" style="border-radius: 50%;">
+
+<article class="doctor-profile">
+  <div class="doctor-profile-header">
+    <% if (Doctor.image && Doctor.image.data) { %>
+      <img 
+        src="data:<%= Doctor.image.contentType %>;base64,<%= Doctor.image.data.toString('base64') %>" 
+        alt="Dr. <%= Doctor.username %>">
+    <% } else { %>
+      <img src="/default-image.jpg" alt="No profile picture available">
+    <% } %>
+  </div>
+
+  <div class="doctor-profile-details">
+    <h2><%= Doctor.name %></h2>
+    <p><strong>Specialty:</strong> <%= Doctor.specialty %></p>
+    <p><strong>Experience:</strong> <%= Doctor.experience %> years</p>
+    <p><strong>Qualifications:</strong> <%= Doctor.qualifications %></p>
+    <p><strong>Available Hours:</strong> <%= Doctor.availableHours %></p>
+    <p><strong>Contact:</strong> <%= Doctor.phone %> | <%= Doctor.email %></p>
+    <p><strong>Address:</strong> <%= Doctor.address || 'Not available' %></p>
+    <p><strong>Location:</strong> <%= Doctor.location || 'Not available' %></p>
+    <% if (Doctor.consultationFee) { %>
+      <p><strong>Consultation Fee:</strong>Rs <%= Doctor.consultationFee %></p>
+    <% } else { %>
+      <p><strong>Consultation Fee:</strong> Not available</p>
+    <% } %>
+    
+  </div>
+
+  <div class="contact-button">
+    <!-- Add a contact button to initiate a conversation with the doctor if needed -->
+    <a href="/chat?doctorId=<%= Doctor._id %>&userId=<%= user._id %>">
+      <button class="btn btn-primary">Contact to  <%= Doctor.name %></button>
+    </a>
+   
+  </div>
+</article>

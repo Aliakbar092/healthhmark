@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="/logo.jpeg" style="border-radius: 50%;">
+    <title><%= animal.name %> Details</title>
+</head>
+<body>
+    <div class="container">
+        <h1><%= animal.name %></h1>
+        <% if (animal.image) { %>
+            <img src="data:<%= animal.image.contentType %>;base64,<%= animal.image.data.toString('base64') %>" alt="<%= animal.name %>" class="img-fluid" />
+        <% } else { %>
+            <img src="/image/default-image.jpg" alt="Default Image" class="img-fluid" /> <!-- Placeholder if no image -->
+        <% } %>
+        <p><strong>Breed:</strong> <%= animal.breed %></p>
+        <p><strong>Age:</strong> <%= animal.age %> Years</p>
+        <p><strong>Color:</strong> <%= animal.color %></p>
+        <p><strong>Location:</strong> <%= animal.location %></p>
+        <p><strong>Price:</strong> $<%= animal.price %></p>
+        <button class="btn btn-primary add-to-cart"
+                data-animal-id="<%= animal._id %>"
+                data-animal-name="<%= animal.name %>"
+                data-animal-price="<%= animal.price %>"
+                data-animal-image="data:<%= animal.image.contentType %>;base64,<%= animal.image.data.toString('base64') %>">
+            Add to Cart
+        </button>
+        <button onclick="location.href='/home'" class="btn btn-secondary">Back to Marketplace</button>
+    </div>
+</body>
+</html>

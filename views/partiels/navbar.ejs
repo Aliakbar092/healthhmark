@@ -1,0 +1,117 @@
+<style>
+    /* Style for Navbar links */
+.navbar-nav .nav-link {
+  color: rgb(3, 170, 3) !important;
+}
+
+/* Style for Dropdown */
+.navbar-nav .dropdown-menu .dropdown-item {
+  color: rgb(3, 170, 3) !important;
+}
+
+/* Hover effect for links */
+.navbar-nav .nav-link:hover,
+.navbar-nav .dropdown-item:hover {
+  background-color: rgba(3, 170, 3, 0.1);
+}
+
+/* Custom logo size */
+.navbar-brand .logo {
+  border-radius: 50%;
+}
+
+/* Positioning the logo and text correctly */
+.navbar-brand span {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Ensure the search bar only appears when needed */
+#searchBarContainer {
+  display: none;
+}
+
+</style>
+<nav class="navbar navbar-expand-lg navbar-light bg-light" style="box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); background-color: #ac3c3c;">
+    <div class="container-fluid">
+      <!-- Left Side: Logo and Website Name -->
+      <a class="navbar-brand d-flex align-items-center" href="/">
+        <img
+          src="logo.jpeg"
+          alt="Logo"
+          width="50"
+          height="50"
+          class="d-inline-block align-text-top logo rounded-circle"
+        />
+        <span class="ms-2" style="font-family: 'Arial', sans-serif; color: rgb(3, 170, 3);">Livestock Healthmark</span>
+      </a>
+  
+      <!-- Toggler/collapsing button for small screens -->
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+  
+      <!-- Right Side: Nav Links, Search, and Sign-in/Sign-up -->
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <!-- Home Link -->
+          <li class="nav-item">
+            <a class="nav-link active" href="/" style="color: rgb(3, 170, 3);">Home</a>
+          </li>
+          
+          <!-- Services Dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="servicesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: rgb(3, 170, 3);">
+              Services
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="servicesDropdown">
+              <li><a class="dropdown-item" href="home" style="color: rgb(3, 170, 3);">Market</a></li>
+              <li><a class="dropdown-item" href="doctormain" style="color: rgb(3, 170, 3);">Consultancy</a></li>
+              <li><a class="dropdown-item" href="Fodder" style="color: rgb(3, 170, 3);">Fodder</a></li>
+            </ul>
+          </li>
+  
+          <!-- Marketplace Link -->
+          <li class="nav-item">
+            <a class="nav-link" href="home" style="color: rgb(3, 170, 3);">Marketspace</a>
+          </li>
+  
+          <!-- About Us Link -->
+          <li class="nav-item">
+            <a class="nav-link" href="aboutus" style="color: rgb(3, 170, 3);">About Us</a>
+          </li>
+  
+          <!-- Sign-in Link -->
+          <li class="nav-item">
+            <a href="addusers" class="nav-link" style="color: rgb(3, 170, 3);">Sign-in</a>
+          </li>
+        </ul>
+  
+        <!-- Search Bar (hidden initially, with animation) -->
+        <div id="searchBarContainer" style="display:none;">
+          <input type="text" id="animalSearch" class="form-control" placeholder="Search animals..." onkeyup="searchAnimals()">
+        </div>
+      </div>
+    </div>
+  </nav>
+  <script>
+    // Example of toggling search bar visibility based on user interaction
+document.getElementById("animalSearch").addEventListener("focus", function() {
+  document.getElementById("searchBarContainer").style.display = "block";
+});
+
+document.getElementById("animalSearch").addEventListener("blur", function() {
+  if (!this.value) {
+    document.getElementById("searchBarContainer").style.display = "none";
+  }
+});
+
+  </script>

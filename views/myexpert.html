@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expert System for Animal Diseases</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f7fa;
+      color: #333;
+      line-height: 1.6;
+      padding: 30px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #007BFF;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      display: inline-block;
+      background-color: #007BFF;
+      color: white;
+      padding: 12px 25px;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #0056b3;
+    }
+
+    .disease-results {
+      margin-top: 30px;
+      padding: 15px;
+      background-color: #f1f1f1;
+      border-radius: 8px;
+    }
+
+    .disease-item {
+      background-color: #f8f8f8;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .disease-item h3 {
+      color: #333;
+    }
+
+    .disease-item p {
+      font-size: 1rem;
+      color: #555;
+    }
+
+    .disease-item ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    .disease-item li {
+      margin: 5px 0;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Animal Disease Expert System</h2>
+
+    <div>
+      <p>Select an animal:</p>
+      <select id="animal-select" class="form-select">
+        <option value="">--Select Animal--</option>
+        <!-- Animals will be dynamically added here -->
+      </select>
+    </div>
+
+    <div>
+      <p>Select symptoms:</p>
+      <div class="symptom-list" id="symptom-list"></div>
+    </div>
+
+    <div>
+      <button id="find-disease-button" class="btn">Find Disease</button>
+    </div>
+
+    <div class="disease-results" id="disease-results">
+      <!-- Disease results will be displayed here -->
+    </div>
+  </div>
+
+  
+
+  <script>
+    // Expanded symptoms, animals, and diseases
+    const symptoms = [
+  { id: 1, name: 'Fever' },
+  { id: 2, name: 'Cough' },
+  { id: 3, name: 'Sneezing' },
+  { id: 4, name: 'Loss of Appetite' },
+  { id: 5, name: 'Fatigue' },
+  { id: 6, name: 'Skin Rash' },
+  { id: 7, name: 'Diarrhea' },
+  { id: 8, name: 'Weight Loss' },
+  { id: 9, name: 'Swelling' },
+  { id: 10, name: 'Breathing Difficulty' },
+  { id: 11, name: 'Bloody Discharge' },
+  { id: 12, name: 'Lameness' },
+  { id: 13, name: 'Coughing with Mucus' },
+  { id: 14, name: 'Runny Nose' },
+  { id: 15, name: 'Drooling' },
+  { id: 16, name: 'Vomiting' },
+  { id: 17, name: 'Hiding' },
+  { id: 18, name: 'Excessive Thirst' },
+  { id: 19, name: 'Stiffness' },
+  { id: 20, name: 'Pale Gums' }
+];
+
+
+const animals = [
+  { id: 1, name: 'Cow', symptoms: [1, 2, 4, 5, 7, 8, 9, 10, 18, 19] },  // Cow (Added Excessive Thirst and Stiffness)
+  { id: 2, name: 'Hen', symptoms: [1, 3, 5, 7, 9, 12, 14, 20] },  // Hen (Added Runny Nose and Pale Gums)
+  { id: 3, name: 'Camel', symptoms: [1, 5, 7, 10, 12, 19] },  // Camel (Added Stiffness)
+  { id: 4, name: 'Rabbit', symptoms: [1, 4, 5, 6, 7, 8, 12, 16] },  // Rabbit (Added Vomiting)
+  { id: 5, name: 'Chicken', symptoms: [1, 2, 4, 5, 7, 10, 13] },  // Chicken (Added Coughing with Mucus)
+  { id: 6, name: 'Horse', symptoms: [1, 5, 7, 8, 9, 12, 16, 19] },  // Horse (Added Vomiting and Stiffness)
+  { id: 7, name: 'Donkey', symptoms: [1, 5, 7, 8, 9, 12, 18] },  // Donkey (Added Excessive Thirst)
+  { id: 8, name: 'Cattle', symptoms: [1, 2, 4, 5, 7, 8, 9, 10, 18, 19] },  // Cattle (Added Excessive Thirst and Stiffness)
+  { id: 9, name: 'Buffalo', symptoms: [1, 2, 4, 5, 7, 9, 10, 18] },  // Buffalo (Added Excessive Thirst)
+  { id: 10, name: 'Goat', symptoms: [1, 2, 4, 5, 7, 8, 12, 14] },  // Goat (Added Runny Nose)
+  { id: 11, name: 'Cat', symptoms: [1, 2, 4, 5, 6, 7, 13] },  // Cat (Added Coughing with Mucus)
+  { id: 12, name: 'Duck', symptoms: [1, 3, 4, 5, 7, 10, 15] },  // Duck (Added Drooling)
+  { id: 13, name: 'Sheep', symptoms: [1, 2, 4, 5, 7, 8, 10, 19] }  // Sheep (Added Stiffness)
+];
+
+
+
+const medications = [
+  { id: 1, name: 'Vaccines (for prevention), antiviral drugs, antibiotics to prevent secondary infections.' },
+  { id: 2, name: 'Antibiotics (Rifampicin, Isoniazid), corticosteroids for inflammation.' },
+  { id: 3, name: 'No specific antiviral treatment, supportive care, and anti-inflammatory drugs for swelling and fever.' },
+  { id: 4, name: 'Antiviral drugs (Oseltamivir), supportive care, and antibiotics to prevent secondary bacterial infections.' },
+  { id: 5, name: 'No cure, but vaccination is available. Supportive treatment includes fluids and antibiotics for secondary infections.' },
+  { id: 6, name: 'Coccidiostats (e.g., amprolium), antibiotics to treat secondary bacterial infections.' },
+  { id: 7, name: 'Long-term antibiotic therapy (rifampicin) and supportive care. No known cure.' },
+  { id: 8, name: 'No cure once symptoms appear. Immediate post-exposure vaccination can prevent infection.' },
+  { id: 9, name: 'Antiviral drugs (Oseltamivir), supportive care, and rest.' },
+  { id: 10, name: 'Pain relievers (NSAIDs), anti-gas medications, and sometimes surgery.' },
+  { id: 11, name: 'No specific treatment, but supportive care may help reduce symptoms in some cases.' },
+  { id: 12, name: 'No cure for myxomatosis, but supportive care may improve the quality of life for infected rabbits.' },
+  { id: 13, name: 'Antiviral medications (e.g., interferons), antibiotics for secondary infections.' },
+  { id: 14, name: 'There is no cure, but antiviral medications (e.g., interferons) and supportive care can improve quality of life.' },
+  { id: 15, name: 'Anthelmintics (e.g., triclabendazole) to treat liver flukes.' },
+  { id: 16, name: 'Cool the animal down with water and electrolytes. In severe cases, intravenous fluids may be needed.' }
+];
+
+// Define herbal solutions array
+const herbalSolutions = [
+  { id: 1, solution: 'Herbal teas like ginger and chamomile to soothe the digestive system; aloe vera gel to reduce swelling.' },
+  { id: 2, solution: 'Echinacea and garlic may help boost immune response, but always consult a vet for treatment.' },
+  { id: 3, solution: 'Herbal tonics like turmeric and ginger for inflammation relief, and elderberry for immune support.' },
+  { id: 4, solution: 'Garlic, oregano, and turmeric can help support the immune system and fight infections.' },
+  { id: 5, solution: 'Ginger and honey can help soothe the respiratory system and boost immunity.' },
+  { id: 6, solution: 'Garlic, ginger, and neem leaf powder are used traditionally to combat parasites.' },
+  { id: 7, solution: 'Turmeric and ginger may help with inflammation, but no herbal solution can cure the disease.' },
+  { id: 8, solution: 'No known herbal treatments for rabies. Immediate veterinary attention is crucial.' },
+  { id: 9, solution: 'Eucalyptus, ginger, and honey can soothe the throat and support breathing.' },
+  { id: 10, solution: 'Peppermint and ginger can help reduce bloating and soothe stomach discomfort.' },
+  { id: 11, solution: 'Garlic and oregano oil are sometimes used to boost the immune system, though effectiveness is not proven.' },
+  { id: 12, solution: 'No effective herbal treatment; vaccination is the best prevention.' },
+  { id: 13, solution: 'Echinacea, elderberry, and garlic may help support the immune system.' },
+  { id: 14, solution: 'Echinacea and astragalus root may help boost immunity.' },
+  { id: 15, solution: 'Wormwood and garlic are used in some herbal remedies for parasite control.' },
+  { id: 16, solution: 'Herbal cooling agents like peppermint and chamomile can help, but proper hydration is the priority.' }
+];
+
+// Diseases array with medication and herbal solution linked by IDs
+const diseases = [
+  {
+    name: 'Foot and Mouth Disease',
+    description: 'A highly contagious viral infection affecting cloven-hoofed livestock such as cattle, sheep, goats, and pigs. It causes fever, blisters in the mouth and on the feet, leading to difficulty eating and walking. The disease can result in significant economic losses due to decreased productivity and trade restrictions.',
+    symptoms: [1, 2, 7, 9],  // Fever, Cough, Diarrhea, Swelling
+    medicationId: 1,
+    herbalSolutionId: 1
+  },
+  {
+    name: 'Bovine Tuberculosis',
+    description: 'A chronic bacterial infection in cattle caused by *Mycobacterium bovis*. It primarily affects the lungs, leading to persistent coughing, weight loss, and general fatigue. The disease can be transmitted to other animals and humans through close contact or consumption of contaminated products.',
+    symptoms: [1, 2, 5, 7, 9],  // Fever, Cough, Fatigue, Diarrhea, Swelling
+    medicationId: 2,
+    herbalSolutionId: 2
+  },
+  {
+    name: 'Bluetongue',
+    description: 'A viral disease affecting ruminants like cattle, sheep, and buffalo, transmitted by biting midges (*Culicoides spp.*). It causes high fever, swelling of the face and tongue, lameness, and difficulty breathing. Severe cases can lead to death, especially in sheep.',
+    symptoms: [7, 5, 10],  // Diarrhea, Fatigue, Breathing Difficulty
+    medicationId: 3,
+    herbalSolutionId: 3
+  },
+  {
+    name: 'Avian Influenza (Bird Flu)',
+    description: 'A highly contagious viral infection in birds, including chickens, ducks, and turkeys, caused by various strains of the influenza virus. It leads to severe respiratory distress, decreased egg production, and high mortality rates in affected flocks. Some strains can infect humans.',
+    symptoms: [1, 3, 4, 10],  // Fever, Sneezing, Loss of Appetite, Breathing Difficulty
+    medicationId: 4,
+    herbalSolutionId: 4
+  },
+  {
+    name: 'Newcastle Disease',
+    description: 'A viral infection in poultry, such as chickens and ducks, caused by the Newcastle disease virus. It manifests with respiratory distress, nervous signs like tremors and paralysis, decreased egg production, and high mortality rates in severe outbreaks.',
+    symptoms: [1, 4, 10, 12],  // Fever, Loss of Appetite, Breathing Difficulty, Lameness
+    medicationId: 5,
+    herbalSolutionId: 5
+  },
+  {
+    name: 'Coccidiosis',
+    description: 'A parasitic disease caused by *Eimeria* species affecting the intestinal tract of poultry. It results in symptoms like diarrhea (often bloody), weight loss, poor growth, and general weakness, which can lead to significant economic losses in poultry farming.',
+    symptoms: [7, 8, 5],  // Diarrhea, Weight Loss, Fatigue
+    medicationId: 6,
+    herbalSolutionId: 6
+  },
+  {
+    name: "Johne's Disease",
+    description: "A chronic bacterial infection in cattle, sheep, goats, and buffalo caused by *Mycobacterium avium* subspecies *paratuberculosis*. It leads to severe, persistent diarrhea, weight loss, reduced milk production, and eventual death. The disease has a long incubation period and can significantly impact herd health.",
+    symptoms: [7, 8, 5],  // Diarrhea, Weight Loss, Fatigue
+    medicationId: 7,
+    herbalSolutionId: 7
+  },
+  {
+    name: 'Rabies',
+    description: 'A fatal viral disease affecting the nervous system of mammals, including livestock. Transmitted through bites or scratches from infected animals, rabies causes symptoms such as confusion, aggression, excessive drooling, paralysis, and ultimately death if not promptly treated.',
+    symptoms: [5, 6, 10, 12],  // Fatigue, Skin Rash, Breathing Difficulty, Lameness
+    medicationId: 8,
+    herbalSolutionId: 8
+  },
+  {
+    name: 'Equine Influenza (Horse Flu)',
+    description: 'A highly contagious viral respiratory infection in horses, donkeys, and related species, caused by the equine influenza virus. It presents with sudden onset of fever, coughing, nasal discharge, and difficulty breathing, similar to human influenza symptoms. Outbreaks can severely impact horse populations and equestrian activities.',
+    symptoms: [1, 2, 10, 7],  // Fever, Cough, Breathing Difficulty, Diarrhea
+    medicationId: 9,
+    herbalSolutionId: 9
+  },
+  {
+    name: 'Colic',
+    description: 'A general term for abdominal pain in horses, donkeys, and camels caused by various gastrointestinal disturbances such as gas buildup, intestinal blockage, or torsion. Symptoms include severe abdominal pain, bloating, pawing at the ground, restlessness, and can be life-threatening if not treated promptly.',
+    symptoms: [1, 7, 9],  // Fever, Diarrhea, Swelling
+    medicationId: 10,
+    herbalSolutionId: 10
+  },
+  {
+    name: 'Rabbit Hemorrhagic Disease',
+    description: 'A highly contagious and lethal viral disease in rabbits caused by the Rabbit Hemorrhagic Disease Virus (RHDV). It leads to sudden death, internal bleeding, liver necrosis, and high mortality rates within days of infection. The disease spreads rapidly through direct contact or contaminated environments.',
+    symptoms: [5, 4, 6],  // Fatigue, Loss of Appetite, Breathing Difficulty
+    medicationId: 11,
+    herbalSolutionId: 11
+  },
+  {
+    name: 'Myxomatosis',
+    description: 'A severe viral disease in rabbits caused by the Myxoma virus. It is transmitted by fleas and mosquitoes and results in symptoms like swelling of the eyes, eyelids, lips, and genitals, along with fever, lethargy, and skin lesions. The disease is often fatal.',
+    symptoms: [1, 2, 3],  // Fever, Cough, Swelling
+    medicationId: 12,
+    herbalSolutionId: 12
+  },
+  {
+    name: 'Canine Parvovirus',
+    description: 'A highly contagious viral infection in dogs caused by the Canine Parvovirus. It primarily affects the gastrointestinal system, leading to severe vomiting, bloody diarrhea, dehydration, and can be fatal if not treated promptly. Puppies and unvaccinated dogs are most at risk.',
+    symptoms: [7, 9, 10, 5],  // Diarrhea, Vomiting, Dehydration
+    medicationId: 13,
+    herbalSolutionId: 13
+  },
+  {
+    name: 'Feline Leukemia Virus',
+    description: 'A retrovirus infection in cats caused by the Feline Leukemia Virus (FeLV). It weakens the immune system, making cats more susceptible to other infections and diseases. Symptoms include persistent fever, weight loss, anemia, and increased susceptibility to cancers. There is no cure, and prevention through vaccination is crucial.',
+    symptoms: [7, 2, 10],  // Diarrhea, Weight Loss, Dehydration
+    medicationId: 14,
+    herbalSolutionId: 14
+  },
+  {
+    name: 'Liver Fluke Disease',
+    description: 'A parasitic infection in livestock caused by liver flukes (*Fasciola hepatica*). It affects the liver and bile ducts, leading to liver damage, anemia, reduced milk and meat production, and can be fatal if left untreated. Infection occurs through ingestion of contaminated water or vegetation.',
+    symptoms: [7, 8, 9],  // Diarrhea, Fatigue, Loss of Appetite
+    medicationId: 15,
+    herbalSolutionId: 15
+  },
+  {
+    name: 'Heatstroke',
+    description: 'A life-threatening condition in animals caused by excessive heat exposure leading to an inability to regulate body temperature. Symptoms include excessive panting, drooling, weakness, collapse, organ failure, and can result in death if not treated immediately. Prevention involves ensuring adequate shade, water, and ventilation.',
+    symptoms: [8, 5, 10],  // Fatigue, Sweating, Breathing Difficulty
+    medicationId: 16,
+    herbalSolutionId: 16
+  }
+];
+
+
+
+// Render the animal selection dropdown
+// Function to render the animal selection dropdown
+function renderAnimalSelect() {
+  const animalSelectElement = document.getElementById('animal-select');
+  animals.forEach(animal => {
+    const option = document.createElement('option');
+    option.value = animal.id;
+    option.textContent = animal.name;
+    animalSelectElement.appendChild(option);
+  });
+}
+
+// Render symptoms for the selected animal
+function renderSymptomsForAnimal(animalId) {
+  const animal = animals.find(a => a.id === animalId);
+  const symptomListElement = document.getElementById('symptom-list');
+  symptomListElement.innerHTML = ''; // Clear previous symptoms
+
+  // Render the symptoms checkboxes for the selected animal
+  animal.symptoms.forEach(symptomId => {
+    const symptom = symptoms.find(s => s.id === symptomId);
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.value = symptom.id;
+    checkbox.id = `symptom-${symptom.id}`;
+    const label = document.createElement('label');
+    label.htmlFor = checkbox.id;
+    label.textContent = symptom.name;
+
+    const container = document.createElement('div');
+    container.appendChild(checkbox);
+    container.appendChild(label);
+
+    symptomListElement.appendChild(container);
+  });
+}
+
+// Find diseases based on selected symptoms
+function findDiseases() {
+  const selectedSymptoms = [];
+  const checkboxes = document.querySelectorAll('.symptom-list input:checked');
+  
+  checkboxes.forEach(checkbox => {
+    selectedSymptoms.push(parseInt(checkbox.value)); // Collect selected symptom IDs
+  });
+
+  const matchingDiseases = diseases.filter(disease => {
+    return selectedSymptoms.every(symptomId => disease.symptoms.includes(symptomId)); // Check if all selected symptoms match
+  });
+
+  const diseaseResultsElement = document.getElementById('disease-results');
+  diseaseResultsElement.innerHTML = '';  // Clear previous results
+
+  if (matchingDiseases.length > 0) {
+    matchingDiseases.forEach(disease => {
+      const diseaseElement = document.createElement('div');
+      diseaseElement.classList.add('disease-item');
+      
+      // Get medication and herbal solution based on ID
+      const medication = medications.find(m => m.id === disease.medicationId);
+const herbalSolution = herbalSolutions.find(h => h.id === disease.herbalSolutionId);
+
+diseaseElement.innerHTML = `
+  <h3>${disease.name}</h3>
+  <p><strong>Description:</strong> ${disease.description}</p>
+  <p><strong>Symptoms:</strong></p>
+  <ul>
+    ${disease.symptoms.map(symptomId => {
+      const symptom = symptoms.find(s => s.id === symptomId);
+      return `<li>${symptom ? symptom.name : 'Unknown Symptom'}</li>`;
+    }).join('')}
+  </ul>
+  <p><strong>Medication:</strong> ${medication ? medication.name : 'No medication available'}</p>
+  <p><strong>Herbal Solution:</strong> ${herbalSolution ? herbalSolution.solution : 'No herbal solution available'}</p>
+`;
+
+diseaseResultsElement.appendChild(diseaseElement);
+
+    });
+  } else {
+    diseaseResultsElement.innerHTML = `
+      <h3>No exact match found.</h3>
+      <p>Based on the symptoms you selected, it might be related to the following disease:</p>
+      <ul>
+        <li><strong>General Infection</strong> (e.g., fever, coughing, fatigue, etc.)</li>
+      </ul>
+      <p><strong>Tip:</strong> Please adjust your symptom selection or select other symptoms for a more accurate diagnosis.</p>
+    `;
+  }
+}
+
+// Initialize the page when the DOM content is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  renderAnimalSelect(); // Render the animal dropdown
+
+  const animalSelect = document.getElementById('animal-select');
+  animalSelect.addEventListener('change', (e) => {
+    const animalId = parseInt(e.target.value);
+    if (animalId) {
+      renderSymptomsForAnimal(animalId); // Render symptoms for the selected animal
+    } else {
+      document.getElementById('symptom-list').innerHTML = ''; // Clear symptoms if no animal selected
+      document.getElementById('disease-results').innerHTML = ''; // Clear disease results
+    }
+  });
+
+  // Trigger disease search when the "Find Disease" button is clicked
+  document.getElementById('find-disease-button').addEventListener('click', findDiseases);
+});
+
+  </script>
+
+</body>
+</html>

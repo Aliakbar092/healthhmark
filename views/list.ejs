@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= animal.name %> - Details</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="icon" type="image/x-icon" href="/logo.jpeg" style="border-radius: 50%;">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .animal-page {
+            padding: 20px;
+        }
+        .animal-image {
+            max-height: 400px;
+            object-fit: cover;
+            width: 100%;
+            border-radius: 8px;
+        }
+        .price-tag {
+            font-size: 28px;
+            color: #e63946;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .animal-info-card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .description-text {
+            margin-top: 15px;
+            font-size: 16px;
+        }
+        .btn-primary {
+            background-color: #ff6f00;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+        }
+        .btn-secondary {
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+            color: #555;
+        }
+        
+    </style>
+</head>
+<body>
+    
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <!-- Other navbar content (e.g., brand, links) -->
+        
+    
+        <!-- Cart Icon on the Right Side -->
+        <div class="cart-icon ml-auto">
+            <a href="/cart">
+                <i class="fa fa-shopping-cart"></i> 
+                <span id="cart-count" class="badge badge-danger">0</span>
+            </a>
+        </div>
+    </nav>
+    
+    <div class="container animal-page">
+        <div class="row">
+            <!-- Left Column: Animal Image -->
+            <div class="col-md-6">
+                <% if (animal.image) { %>
+                    <img src="data:<%= animal.image.contentType %>;base64,<%= animal.image.data.toString('base64') %>" 
+                         alt="<%= animal.name %>" class="animal-image img-fluid"/>
+                <% } else { %>
+                    <img src="/image/default-image.jpg" alt="Default Image" class="animal-image img-fluid"/>
+                <% } %>
+            </div>
+
+            <!-- Right Column: Animal Details -->
+            <div class="col-md-6">
+                <div class="animal-info-card">
+                    <h1><%= animal.name %></h1>
+                    <p class="price-tag">$<%= animal.price %></p>
+
+                    <!-- Animal Key Details -->
+                    <div class="mt-3">
+                        <p><strong>Breed:</strong> <%= animal.breed %></p>
+                        <p><strong>Age:</strong> <%= animal.age %> Years</p>
+                        <p><strong>Color:</strong> <%= animal.color %></p>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="description-text">
+                        <strong>Description:</strong>
+                        <p><%= animal.description %> 
+                            Livestock animals are domesticated species like cattle, sheep, goats, poultry, and swine, raised for meat, milk, wool, labor, and other agricultural products. They play a vital role in food production and rural economies worldwide.</p>
+                    </div>
+
+                    <!-- Buttons -->
+                    <button class="btn btn-primary add-to-cart" 
+                    data-animal-id="<%= animal._id %>" 
+                    data-animal-name="<%= animal.name %>" 
+                    data-animal-price="<%= animal.price %>"
+                    data-animal-image="data:<%= animal.image.contentType %>;base64,<%= animal.image.data.toString('base64') %>">
+                Add to Cart
+            </button>
+            
+            
+                        <button onclick="location.href='/home'" class="btn btn-secondary">Back to Marketplace</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Information (Specifications, Customer Reviews, etc.) -->
+        <div class="row mt-5">
+            <div class="col-md-12">
+                <div class="animal-info-card">
+                    <h4>Specifications</h4>
+                    <ul>
+                        <li><strong>Health Status:</strong> Healthy and vaccinated</li>
+                        <li><strong>Location:</strong> <%= animal.location %></li>
+                        <li><strong>Delivery Options:</strong> Doorstep delivery and farm pickup available</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for modal functionality -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    updateCartIcon();
+});
+
+// Add to Cart functionality
+document.querySelectorAll('.add-to-cart').forEach(button => {
+    button.addEventListener('click', function() {
+        const animalId = this.getAttribute('data-animal-id');
+        const animalName = this.getAttribute('data-animal-name');
+        const animalPrice = this.getAttribute('data-animal-price');
+        const animalImage = this.getAttribute('data-animal-image');
+
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        // Check if the animal is already in the cart
+        const existingAnimal = cart.find(item => item.id === animalId);
+        
+        if (existingAnimal) {
+            alert(animalName + " is already in the cart.");
+        } else {
+            // Add new animal to cart
+            cart.push({
+                id: animalId,
+                name: animalName,
+                price: animalPrice,
+                image: animalImage,
+                quantity: 1 // Initial quantity
+            });
+            
+            // Save cart back to localStorage
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            // Update cart icon
+            updateCartIcon();
+            
+            // alert(animalName + " added to cart.");
+        }
+    });
+});
+
+// Function to update cart icon with the number of items
+function updateCartIcon() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    document.getElementById('cart-count').innerText = cart.length;
+}
+
+    </script>
+</body>
+</html>
